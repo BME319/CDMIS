@@ -548,7 +548,13 @@
         var UserId = document.getElementById("UId").value;
         $("#menu li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
         if ($("#menu li:eq(0) a").attr("href") == "/DoctorHome/HealthCoachPatientList") {
-            $("#nav li:eq(4) a").html("推荐医生");
+            $("#nav li:eq(4) a").html("求助医生");
+            $("#nav li:eq(4) a").attr("href", "/DoctorHome/QuestionDoctor?PatientId=" + UserId);
+        }
+        else
+        {
+            $("#menu li:eq(2) a").html("历史记录");
+            $("#menu li:eq(2) a").attr("href", "/DoctorHome/HistoryRecord");
         }
 
         $(".addClinicalInfoBtn").click(function () {

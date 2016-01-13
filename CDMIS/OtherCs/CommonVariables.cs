@@ -158,7 +158,7 @@ namespace CDMIS.ViewModels
             List<SelectListItem> CareLevelList = new List<SelectListItem>();
             try
             {
-                DataSet ds = _ServicesSoapClient.GetTypeList("SpecialLevel");
+                DataSet ds = _ServicesSoapClient.GetTypeList("ConsultEmergency");
                 if (ds == null)
                 {
                     return CareLevelList;
@@ -185,27 +185,26 @@ namespace CDMIS.ViewModels
             //CareLevelList.Add(new SelectListItem { Text = "特殊关注", Value = "2" });
         }
 
-        public static List<SelectListItem> GetAlertStatusList()
+        public static List<SelectListItem> GetStatusList()
         {
-            List<SelectListItem> AlertStatusList = new List<SelectListItem>();
+            List<SelectListItem> StatusList = new List<SelectListItem>();
             try
             {
-                DataSet ds = _ServicesSoapClient.GetTypeList("ProcessStatus");
+                DataSet ds = _ServicesSoapClient.GetTypeList("ConsultStatus");
                 if (ds == null)
                 {
-                    return AlertStatusList;
+                    return StatusList;
                 }
-                AlertStatusList.Add(new SelectListItem { Text = "全部", Value = "0" });
 
                 foreach (DataTable itemtable in ds.Tables)
                 {
                     foreach (DataRow item in itemtable.Rows)
                     {
-                        AlertStatusList.Add(new SelectListItem { Text = item["Name"].ToString(), Value = item["Type"].ToString() });
+                        StatusList.Add(new SelectListItem { Text = item["Name"].ToString(), Value = item["Type"].ToString() });
 
                     }
                 }
-                return AlertStatusList;
+                return StatusList;
 
             }
             catch (Exception ex)

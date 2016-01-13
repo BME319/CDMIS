@@ -188,9 +188,9 @@ namespace CDMIS.ViewModels
         public string DoctorId { get; set; }
         public string AlertStatusSelected { get; set; }  //选中的警报处置状态
 
-        public List<SelectListItem> AlertStatusList()
+        public List<SelectListItem> StatusList()
         {
-            return CommonVariables.GetAlertStatusList();
+            return CommonVariables.GetStatusList();
         }
         public List<AlertInfo> AlertList { get; set; }	   //字段：警报类型、警报项目、警报时间根据处置状态和警报时间倒序排列，有操作列，可直接给患者发信，发信后推送状态置位
         public PatientAlertViewModel()
@@ -594,7 +594,7 @@ namespace CDMIS.ViewModels
 
         public List<SelectListItem> AlertStatusList()
         {
-            return CommonVariables.GetAlertStatusList();
+            return CommonVariables.GetStatusList();
         }
 
         public List<AlertInfo> AlertRecordList { get; set; }    //警报列表

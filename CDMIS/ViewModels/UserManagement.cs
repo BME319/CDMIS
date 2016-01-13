@@ -158,4 +158,23 @@ namespace CDMIS.ViewModels
         }
         
     }
+
+    //专员求助医生界面
+    public class QuestionDoctorViewModel
+    {
+        public string PatientId { get; set; }
+        public List<ModuleAndDoctor> ModuleInfoList { get; set; }
+        public List<HealthCoach> HealthCoachInfoList { get; set; }
+        public List<DoctorAndHCInfo> HealthCoachList { get; set; }
+        public List<SelectListItem> CareLevelList()
+        {
+            return CommonVariables.GetCareLevelList();
+        }
+        public QuestionDoctorViewModel()
+        {
+            ModuleInfoList = new List<ModuleAndDoctor>();
+            HealthCoachInfoList = new List<HealthCoach>();
+            HealthCoachList = new List<DoctorAndHCInfo>();
+        }
+    }
 }

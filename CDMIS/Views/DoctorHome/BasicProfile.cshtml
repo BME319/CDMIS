@@ -243,7 +243,7 @@
                     </div>
                 </div>
             </div>
-            <input type="submit" value="下一步" class="btn btn-primary submitBtn" style="float: right" />
+            <input type="submit" value="下一步" class="btn submitBtn" style="float: right; height: 30px; width: 128px; background: #3D3D3D; opacity: .8; font-size: 16px; color: #FFF; font-family: \9ED1\4F53; line-height: 0px;" onmousemove="Highlight(this)" onmouseout="Lowlight(this)"/>
         </div>
     </div>                              
 }
@@ -351,7 +351,13 @@
         }
         $("#menu li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
         if ($("#menu li:eq(0) a").attr("href") == "/DoctorHome/HealthCoachPatientList") {
-            $("#nav li:eq(4) a").html("推荐医生");
+            $("#nav li:eq(4) a").html("求助医生");
+            $("#nav li:eq(4) a").attr("href", "/DoctorHome/QuestionDoctor?PatientId=" + UserId);
+        }
+        else
+        {
+            $("#menu li:eq(2) a").html("历史记录");
+            $("#menu li:eq(2) a").attr("href", "/DoctorHome/HistoryRecord");
         }
     })
 
@@ -592,5 +598,17 @@
             }
 
         });
+    }
+
+    function Highlight(x)
+    {
+        x.style.background = "#2ac7e1";
+        x.style.opacity = "1";
+    }
+
+    function Lowlight(x)
+    {
+        x.style.background = "#3D3D3D";
+        x.style.opacity = ".8";
     }
 </script>

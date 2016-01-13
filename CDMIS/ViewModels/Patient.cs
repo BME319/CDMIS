@@ -139,7 +139,7 @@ namespace CDMIS.ViewModels
 
         public PatientListViewModel(string UserId)
         {
-            PatientList = new List<PatientBasicInfo>();
+            PatientList = new List<PatientDetail>();
             DoctorId = UserId;
             List<SelectListItem> moduleList = this.ModuleList();
             if (moduleList.Count > 1)
@@ -158,7 +158,7 @@ namespace CDMIS.ViewModels
 
         public PatientListViewModel()
         {
-            PatientList = new List<PatientBasicInfo>();
+            PatientList = new List<PatientDetail>();
         }
         public List<SelectListItem> GenderList()
         {
@@ -175,20 +175,28 @@ namespace CDMIS.ViewModels
             return CommonVariables.GetModuleListByDoctorId(this.DoctorId);
             //return CommonVariables.GetModuleList();
         }
-
-        public List<SelectListItem> AlertStatusList()
+        public List<SelectListItem> UnprocessedStatusList()
         {
-            return CommonVariables.GetAlertStatusList();
+            List<SelectListItem> StatusList = CommonVariables.GetStatusList();
+            List<SelectListItem> UnprocessedStatusList = StatusList.GetRange(0, 3);
+            UnprocessedStatusList.Insert(0, StatusList[6]);
+            return UnprocessedStatusList;
         }
-
+        public List<SelectListItem> ProcessedStatusList()
+        {
+            List<SelectListItem> StatusList = CommonVariables.GetStatusList();
+            List<SelectListItem> ProcessedStatusList = StatusList.GetRange(3, 3);
+            ProcessedStatusList.Insert(0, StatusList[7]);
+            return ProcessedStatusList;
+        }
         public string PatientId { get; set; }
         public string PatientName { get; set; }
         public string GenderSelected { get; set; }              //选中的性别
         public string CareLevelSelected { get; set; }             //选中的关注等级
         public string ModuleSelected { get; set; }        //选中的管理模块
-        public string AlertStatusSelected { get; set; }  //选中的警报处置状态
+        public string StatusSelected { get; set; }        //选中的处理状态
         public string AdvancedSearchEnable { get; set; }   //高级搜索状态标志
         public string DoctorId { get; set; }
-        public List<PatientBasicInfo> PatientList { get; set; }    //模块信息、模块关注详细信息
+        public List<PatientDetail> PatientList { get; set; }    //模块信息、模块关注详细信息
     }
 }

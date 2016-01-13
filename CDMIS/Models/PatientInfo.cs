@@ -87,4 +87,20 @@ namespace CDMIS.Models
         public string EndDate { get; set; }
         public string Remarks { get; set; }
     }
+
+    //网页端医生首页显示
+    public class PatientDetail
+    {
+        public string UserID { get; set; }
+        public string UserName { get; set; }
+        public string Gender { get; set; }
+        public string GenderText { get; set; }
+        public int Age { get; set; }
+        public string Module { get; set; }
+        public string ApplicationDate { get; set; }
+        public int CareLevel { get; set; }
+        public int Status { get; set; }
+        public string StatusText { get; set; }
+        public string PhotoAddress { get; set; }
+    }
 }
