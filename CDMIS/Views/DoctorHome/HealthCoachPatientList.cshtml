@@ -8,7 +8,7 @@
 <script type="text/javascript" src="../../Scripts/jquery.dataTables.js"></script>
 <script type="text/javascript" src="../../Scripts/chinese-string.js"></script>
 <script type="text/javascript" src="../../Scripts/jquery.simplemodal.1.4.4.min.js"></script>
-<style type="text/css">
+<style type="text/css">   
     #simplemodal-container {
         height: 400px;
         width: 600px;
@@ -38,24 +38,13 @@
             模块
         </label>
         <div class="col-sm-2" style="width:170px;">
-            <select class="form-control" id="ModuleDropDownList">
-                <option value="">全部</option>
-                <option value="HM1">高血压模块</option>
-                <option value="HM2">糖尿病模块</option>
-                <option value="HM3">心力衰竭模块</option>
-            </select>
+            @Html.DropDownListFor(model => model.ModuleSelected, Model.ModuleList(), new { id = "ModuleDropDownList", @class = "form-control" })
         </div>
         <label for="" class=" col-sm-1 control-label" style="width:60px;">
             性别
         </label>
         <div class="col-sm-2" style="width:150px;">
-            <select class="form-control" id="GenderDropDownList">
-                <option value="">请选择</option>
-                <option value="男性">男性</option>
-                <option value="女性">女性</option>
-                <option value="其他">其他</option>
-                <option value="未知">未知</option>
-            </select>
+            @Html.DropDownListFor(model => model.GenderSelected, Model.GenderList(), new { id = "GenderDropDownList", @class = "form-control" })
         </div>
         <div class="col-sm-1 ">
             <input id="patientListSearch" type="button" class="btn btn-primary" value="查 看" onclick="GetPatientsList('@Model.DoctorId')" />
@@ -70,29 +59,32 @@
             <table width="100%" id="DataTable" class="display ">
                 <thead>
                     <tr>
-                        <th width="290px">
+                        <th width="310px">
                             操作
                         </th>
-                        <th width="120px">
+                        <th width="140px">
                             患者ID
                         </th>
-                        <th width="80px">
+                        <th width="90px">
                             姓名
                         </th>
-                        <th width="40px">
+                        <th width="70px">
                             性别
                         </th>
-                        <th width="40px">
+                        <th width="70px">
                             年龄
                         </th>
-                        <th width="120px">
+                        <th width="140px">
                             模块
                         </th>
-                        <th width="120px">
+                        <th width="90px">
                             依从率
                         </th>
-                        <th width="100px">
+                        <th width="130px">
                             剩余天数
+                        </th>
+                        <th>
+                            照片
                         </th>
                     </tr>
                 </thead>
@@ -101,6 +93,8 @@
             </table>
         </div>
     </div>
+    
+    <img id="PatientPhoto" src="" style="display: none;"/>
     
     <div id="sendMessageDiv" style="display: none;">
         <div class="modalHeader">
@@ -115,12 +109,13 @@
 
 <script type="text/javascript">
     var WebAPI = "http://121.43.107.106:9000/";
+    var ImageURI = "http://121.43.107.106:8088/PersonalPhoto/";
     var table = $('#DataTable').DataTable({
         "oLanguage": {//语言国际化
             "sUrl": "/Content/jquery.dataTable.cn.txt"
         },
         "bPaginate": true,  //是否分页。
-        "sScrollY": "400px",
+        "sScrollY": "410px",
         "bFilter": false,
         "bLengthChange": false,
         "iDisplayLength": 10,
@@ -128,6 +123,10 @@
         //隐藏列
         "columnDefs": [{
             "bSortable": false, "aTargets": [0]
+        }, {
+            "targets": [8],
+            "visible": false,
+            "searchable": false
         }] //禁止某些列的排序功能
     });
 
@@ -136,6 +135,38 @@
         $("#menu li:eq(0) a").attr("id", "current");
         GetPatientsList("@Model.DoctorId");
         $("#menu li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
+        $(document).on("mouseover", ".odd", function (e) {
+            var Right = $("#tableContainer1").offset().left - 150;
+            var eve = e || window.event;
+            var trSeq = $(this).parent().find("tr").index(this);
+            table.column(8).visible(true);
+            var PhotoAddress = $("#PatientListTbody tr:eq(" + trSeq + ") td:eq(8)").text().trim();
+            if (PhotoAddress == "") {
+                PhotoAddress = "non.jpg";
+            }
+            $("#PatientPhoto").attr("src", ImageURI + PhotoAddress);
+            $("#PatientPhoto").attr("style", "position: absolute; width: 100px; height: 100px; top: " + eve.clientY + "px; right: " + Right + "px;");
+            table.column(8).visible(false);
+        });
+        $(document).on("mouseover", ".even", function (e) {
+            var Right = $("#tableContainer1").offset().left - 150;
+            var eve = e || window.event;
+            var trSeq = $(this).parent().find("tr").index(this);
+            table.column(8).visible(true);
+            var PhotoAddress = $("#PatientListTbody tr:eq(" + trSeq + ") td:eq(8)").text().trim();
+            if (PhotoAddress == "") {
+                PhotoAddress = "non.jpg";
+            }
+            $("#PatientPhoto").attr("src", ImageURI + PhotoAddress);
+            $("#PatientPhoto").attr("style", "position: absolute; width: 100px; height: 100px; top: " + eve.clientY + "px; right: " + Right + "px;");
+            table.column(8).visible(false);
+        });
+        $(document).on("mouseout", ".odd", function () {
+            $("#PatientPhoto").attr("style", "display: none;")
+        });
+        $(document).on("mouseout", ".even", function () {
+            $("#PatientPhoto").attr("style", "display: none;")
+        });
     })
 
     //获取专员病人列表
@@ -145,7 +176,7 @@
         $("th[aria-label*='患者ID']").click();
         $(".sorting_asc").click();
         var BasicInfo = null
-        if ($("#ModuleDropDownList").val() == "HM1" || $("#ModuleDropDownList").val() == "") {
+        if ($("#ModuleDropDownList").val() == "M1" || $("#ModuleDropDownList").val() == "") {
             var url = WebAPI + "Api/v1/Users/GetPatientsPlan?DoctorId=" + DoctorId + "&Module=HM1&VitalType={VitalType}&VitalCode={VitalCode}"
             $.ajax({
                 type: "GET",
@@ -162,16 +193,17 @@
                                     BasicInfo = ret
                                 }
                             })
-                            if (res[i].PatientId.indexOf($("#PatientId").val()) != -1 && res[i].PatientName.indexOf($("#PatientName").val()) != -1 && BasicInfo.GenderText.indexOf($("#GenderDropDownList").val()) != -1) {
+                            if (res[i].PatientId.indexOf($("#PatientId").val()) != -1 && res[i].PatientName.indexOf($("#PatientName").val()) != -1 && BasicInfo.Gender.indexOf($("#GenderDropDownList").val()) != -1) {
                                 table.row.add({
-                                    "0": '<a href=""><input id="BasicProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/profile.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="个人信息" /></a><a href=""><input id="ClinicalInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/plan.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="就诊信息" /></a><a href=""><input id="ClinicalProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/medication.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息" /></a><a href=""><input id="ModuleProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/module.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康模块" /></a><a href=""><input id="HealthCoachManagement" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/healthcoach.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康专员管理" /></a><a href=""><input id="ClinicTimeLine" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/clinictimeline.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息查看" /></a><a><input id="MessageLink" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/mail.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="发信" /></a><a href=""><input id="AddClinicInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/addclinicinfo.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="添加医嘱" /></a>',
+                                    "0": '<a href=""><input id="BasicProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/profile.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="个人信息" /></a><a href=""><input id="ClinicalInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/plan.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="就诊信息" /></a><a href=""><input id="ClinicalProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/medication.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息" /></a><a href=""><input id="ModuleProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/module.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康模块" /></a><a href=""><input id="HealthCoachManagement" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/healthcoach.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="向医生求助" /></a><a href=""><input id="ClinicTimeLine" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/clinictimeline.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息查看" /></a><a><input id="MessageLink" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/mail.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="发信" /></a>',//<a href=""><input id="AddClinicInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/addclinicinfo.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="添加医嘱" /></a>',
                                     "1": res[i].PatientId,
                                     "2": res[i].PatientName,
                                     "3": BasicInfo.GenderText,
                                     "4": BasicInfo.Age,
                                     "5": "高血压模块",
                                     "6": res[i].ComplianceRate,
-                                    "7": res[i].RemainingDays
+                                    "7": res[i].RemainingDays,
+                                    "8": res[i].photoAddress
                                 }).draw();
                             }
                         }
@@ -179,7 +211,7 @@
                 }
             })
         }
-        if ($("#ModuleDropDownList").val() == "HM2" || $("#ModuleDropDownList").val() == "") {
+        if ($("#ModuleDropDownList").val() == "M2" || $("#ModuleDropDownList").val() == "") {
             var url = WebAPI + "Api/v1/Users/GetPatientsPlan?DoctorId=" + DoctorId + "&Module=HM2&VitalType={VitalType}&VitalCode={VitalCode}"
             $.ajax({
                 type: "GET",
@@ -196,16 +228,17 @@
                                     BasicInfo = ret
                                 }
                             })
-                            if (res[i].PatientId.indexOf($("#PatientId").val()) != -1 && res[i].PatientName.indexOf($("#PatientName").val()) != -1 && BasicInfo.GenderText.indexOf($("#GenderDropDownList").val()) != -1) {
+                            if (res[i].PatientId.indexOf($("#PatientId").val()) != -1 && res[i].PatientName.indexOf($("#PatientName").val()) != -1 && BasicInfo.Gender.indexOf($("#GenderDropDownList").val()) != -1) {
                                 table.row.add({
-                                    "0": '<a href=""><input id="BasicProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/profile.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="个人信息" /></a><a href=""><input id="ClinicalInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/plan.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="就诊信息" /></a><a href=""><input id="ClinicalProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/medication.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息" /></a><a href=""><input id="ModuleProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/module.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康模块" /></a><a href=""><input id="HealthCoachManagement" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/healthcoach.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康专员管理" /></a><a href=""><input id="ClinicTimeLine" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/clinictimeline.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息查看" /></a><a><input id="MessageLink" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/mail.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="发信" /></a><a href=""><input id="AddClinicInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/addclinicinfo.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="添加医嘱" /></a>',
+                                    "0": '<a href=""><input id="BasicProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/profile.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="个人信息" /></a><a href=""><input id="ClinicalInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/plan.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="就诊信息" /></a><a href=""><input id="ClinicalProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/medication.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息" /></a><a href=""><input id="ModuleProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/module.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康模块" /></a><a href=""><input id="HealthCoachManagement" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/healthcoach.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="向医生求助" /></a><a href=""><input id="ClinicTimeLine" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/clinictimeline.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息查看" /></a><a><input id="MessageLink" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/mail.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="发信" /></a>',//<a href=""><input id="AddClinicInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/addclinicinfo.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="添加医嘱" /></a>',
                                     "1": res[i].PatientId,
                                     "2": res[i].PatientName,
                                     "3": BasicInfo.GenderText,
                                     "4": BasicInfo.Age,
                                     "5": "糖尿病模块",
                                     "6": res[i].ComplianceRate,
-                                    "7": res[i].RemainingDays
+                                    "7": res[i].RemainingDays,
+                                    "8": res[i].photoAddress
                                 }).draw();
                             }
                         }
@@ -213,7 +246,7 @@
                 }
             })
         }
-        if ($("#ModuleDropDownList").val() == "HM3" || $("#ModuleDropDownList").val() == "") {
+        if ($("#ModuleDropDownList").val() == "M3" || $("#ModuleDropDownList").val() == "") {
             var url = WebAPI + "Api/v1/Users/GetPatientsPlan?DoctorId=" + DoctorId + "&Module=HM3&VitalType={VitalType}&VitalCode={VitalCode}"
             $.ajax({
                 type: "GET",
@@ -230,16 +263,17 @@
                                     BasicInfo = ret
                                 }
                             })
-                            if (res[i].PatientId.indexOf($("#PatientId").val()) != -1 && res[i].PatientName.indexOf($("#PatientName").val()) != -1 && BasicInfo.GenderText.indexOf($("#GenderDropDownList").val()) != -1) {
+                            if (res[i].PatientId.indexOf($("#PatientId").val()) != -1 && res[i].PatientName.indexOf($("#PatientName").val()) != -1 && BasicInfo.Gender.indexOf($("#GenderDropDownList").val()) != -1) {
                                 table.row.add({
-                                    "0": '<a href=""><input id="BasicProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/profile.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="个人信息" /></a><a href=""><input id="ClinicalInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/plan.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="就诊信息" /></a><a href=""><input id="ClinicalProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/medication.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息" /></a><a href=""><input id="ModuleProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/module.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康模块" /></a><a href=""><input id="HealthCoachManagement" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/healthcoach.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康专员管理" /></a><a href=""><input id="ClinicTimeLine" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/clinictimeline.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息查看" /></a><a><input id="MessageLink" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/mail.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="发信" /></a><a href=""><input id="AddClinicInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/addclinicinfo.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="添加医嘱" /></a>',
+                                    "0": '<a href=""><input id="BasicProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/profile.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="个人信息" /></a><a href=""><input id="ClinicalInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/plan.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="就诊信息" /></a><a href=""><input id="ClinicalProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/medication.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息" /></a><a href=""><input id="ModuleProfile" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/module.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="健康模块" /></a><a href=""><input id="HealthCoachManagement" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/healthcoach.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="向医生求助" /></a><a href=""><input id="ClinicTimeLine" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/clinictimeline.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="临床信息查看" /></a><a><input id="MessageLink" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/mail.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="发信" /></a>',//<a href=""><input id="AddClinicInfo" onclick="OperationBtn(this)" style="border: 0; background-image: url(../../Content/Image/addclinicinfo.png); background-repeat: no-repeat; background-color: transparent; cursor: pointer; width: 24px; height: 24px; margin-right: 5px" title="添加医嘱" /></a>',
                                     "1": res[i].PatientId,
                                     "2": res[i].PatientName,
                                     "3": BasicInfo.GenderText,
                                     "4": BasicInfo.Age,
                                     "5": "心力衰竭模块",
                                     "6": res[i].ComplianceRate,
-                                    "7": res[i].RemainingDays
+                                    "7": res[i].RemainingDays,
+                                    "8": res[i].photoAddress
                                 }).draw();
                             }
                         }
@@ -276,7 +310,7 @@
                 }
             case "HealthCoachManagement":
                 {
-                    $(Button).parent().attr('href', "/DoctorHome/HealthCoachManagement" + "?PatientId=" + content);
+                    $(Button).parent().attr('href', "/DoctorHome/QuestionDoctor" + "?PatientId=" + content);
                     break;
                 }
             case "ClinicTimeLine":

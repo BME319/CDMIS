@@ -181,48 +181,29 @@ namespace CDMIS.Controllers
             var ModuleTable = _ServicesSoapClient.GetModulesBoughtByPId(PatientId);
             if (DoctorId != "0")
             {
-                if (user.Role == "Doctor")
+                Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, "HC", "Doctor", Convert.ToInt32(Seq), DoctorId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
+                foreach (DataRow Row in ModuleTable.Tables[0].Rows)
                 {
-                    Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, "HC", "Doctor", Convert.ToInt32(Seq), DoctorId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
-                    foreach (DataRow Row in ModuleTable.Tables[0].Rows)
-                    {
-                        Ret = _ServicesSoapClient.SetPsDoctorDetailOnPat(DoctorId, "H" + Row[0].ToString(), PatientId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
-                        Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, "H" + Row[0].ToString(), "InvalidFlag", 1, "0", "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
-                        Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, "H" + Row[0].ToString(), "Doctor", 1, DoctorId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
-                    }
-                }
-                else
-                {
-                    Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, Module.Substring(1), "Doctor", 1, DoctorId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
-                    Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, Module.Substring(1), "InvalidFlag", 1, "0", "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
-                    Ret = _ServicesSoapClient.SetPsDoctorDetailOnPat(DoctorId, Module.Substring(1), PatientId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
+                    Ret = _ServicesSoapClient.SetPsDoctorDetailOnPat(DoctorId, "H" + Row[0].ToString(), PatientId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
+                    Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, "H" + Row[0].ToString(), "InvalidFlag", 1, "0", "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
+                    Ret = _ServicesSoapClient.SetBasicInfoDetail(PatientId, "H" + Row[0].ToString(), "Doctor", 1, DoctorId, "", 1, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType) ? 1 : 0;
                 }
             }
             if (PreDocId != "0")
             {
-                if (user.Role == "Doctor")
+                foreach (DataRow Row in ModuleTable.Tables[0].Rows)
                 {
-                    foreach (DataRow Row in ModuleTable.Tables[0].Rows)
-                    {
-                        Ret = _ServicesSoapClient.DeletePatient(PreDocId, "H" + Row[0].ToString(), PatientId);
-                    }
-                }
-                else
-                {
-                    Ret = _ServicesSoapClient.DeletePatient(PreDocId, Module.Substring(1), PatientId);
+                    Ret = _ServicesSoapClient.DeletePatient(PreDocId, "H" + Row[0].ToString(), PatientId);
                 }
             }
             if (Ret == 1)
             {
-                if (user.Role == "HealthCoach")
+                foreach (DataRow Row in ModuleTable.Tables[0].Rows)
                 {
-                    foreach (DataRow Row in ModuleTable.Tables[0].Rows)
+                    string planNo = _ServicesSoapClient.GetExecutingPlanByModule(PatientId, Row[0].ToString());
+                    if (planNo != null && planNo != "")
                     {
-                        string planNo = _ServicesSoapClient.GetExecutingPlanByModule(PatientId, Row[0].ToString());
-                        if (planNo != null && planNo != "")
-                        {
-                            _ServicesSoapClient.UpdatePlanStatus(planNo, 4, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType);
-                        }
+                        _ServicesSoapClient.UpdatePlanStatus(planNo, 4, user.UserId, user.TerminalName, user.TerminalIP, user.DeviceType);
                     }
                 }
             }
@@ -248,6 +229,33 @@ namespace CDMIS.Controllers
             }
         }
 
+        //导入患者页面
+        public ActionResult ImportPatient()
+        {
+            PatientList model = new PatientList();
+            for (int i = 1; i < 10; i++)
+            {
+                PatientExport pt = new PatientExport();
+                pt.PatientId = "11" + i;
+                pt.PatientName = "哈哈" + i;
+                pt.HUserId = "22" + i;
+                pt.HospitalCode = "33";
+                pt.HospitalName = "呵呵" + i;
+                pt.HealthCoachId = "44";
+                pt.HealthCoachName = "来来" + i;
+                model.list.Add(pt);
+            }
+            PatientExport ppt = new PatientExport();
+            ppt.PatientId = "11";
+            ppt.PatientName = "哈哈";
+            ppt.HUserId = "22";
+            ppt.HospitalCode = "33";
+            ppt.HospitalName = "就是你";
+            ppt.HealthCoachId = "44";
+            ppt.HealthCoachName = "来来";
+            model.list.Add(ppt);
+            return View(model);
+        }
 
         #region<" function ">
         #region 用户管理

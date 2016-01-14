@@ -308,6 +308,7 @@
 </div>
 <div style="float: right">
     <ul id="Redirect">
+        <li>@Html.ActionLink("上一步", "ClinicalInfo", "DoctorHome", new { UserId = @Model.UserId }, null)</li>
         <li>@Ajax.ActionLink("下一步", "DiagnosisInfo", new { UserId = @Model.UserId, VisitId = @Model.VisitId }, new AjaxOptions { OnSuccess = "tabClick2();", UpdateTargetId = "ShowClinicalProfileInfo", InsertionMode = InsertionMode.Replace })</li>
        @* <li>@Html.ActionLink("完成", "PatientList", "DoctorHome", new { PatientId = @Model.UserId }, null)</li>*@
     </ul>

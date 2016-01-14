@@ -1,7 +1,7 @@
 ﻿@model CDMIS.ViewModels.PatientList
 @{
     ViewBag.Title = "主页";
-    Layout = "~/Views/Shared/_DoctorLayout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
 <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" type="text/css" />
@@ -20,7 +20,7 @@
     }
 </style>
 <div style="text-align: right;">
-    <input type="button" id="clinicalDataExport" value="批量导出临床数据" class="btn btn-primary exportClinicBtn"
+    <input type="button" id="dataImport" value="导入患者列表" class="btn btn-primary insertBtn"
            style="margin-right: 10px" />
 </div>
 <div id="tableContainer1" class="tableContainer" style="margin-top: 15px">
@@ -150,21 +150,33 @@
         $('#HospitalName, #HealthCoachName').keyup(function () {
             table.draw();
         });
+    })
 
-        $("#menu li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
-        $("#menu a").attr("id", ""); //Reset id's 
-        $("#menu li:eq(2) a").attr("id", "current");
+    $(document).on("click", "#dataImport", function () {
+        screenwidth = document.body.offsetWidth;
+        screenheight = document.body.scrollHeight;
+
+        bordercolor = "#336699"; //提示窗口的边框颜色
+        titlecolor = "#99CCFF"; //提示窗口的标题颜色
+        subwindowwidth = 600;
+        subwindowheight = 360;
+
+        /*绘制蒙版---------------------------------------------------------------------------------------*/
+        DrawMask(screenwidth, screenheight);
+
+        /*绘制提示层---------------------------------------------------------------------------------------*/
+        var iframecontainer = DrawSubwindow(screenwidth, screenheight, subwindowwidth, subwindowheight, "数据导入");
+
+        iframecontainer.append("iframe")
+                .attr("width", subwindowwidth - 10)
+                .attr("height", subwindowheight - titleheight - 20)
+                .attr("frameborder", "0")
+                .attr("src", "/Home/DataImport");
+
     })
 
     String.prototype.trim = function () {
         return this.replace(/(^\s*)|(\s*$)/g, "");
     }
-
-    $(document).on("click", ".exportClinicBtn", function () {
-        $('#editDataDiv').modal({
-            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            overlayClose: true     //点击蒙层关闭窗口
-        });
-    })
 
 </script>

@@ -106,18 +106,9 @@
                     <tr>
                         <td style="display: none;">@item.HCDivName
                         </td>
-                        @if (item.HCDivName.IndexOf("HC") != -1)
-                        {
-                            <td>
-                                健康专员
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                @item.DataTableName
-                            </td>
-                        }
+                        <td>
+                            健康专员
+                        </td>
                         <td style="display: none;">@item.HealthCoachId
                         </td>
                         <td>
@@ -138,7 +129,8 @@
 }
 
     <ul id="Redirect">
-        <li>@Html.ActionLink("完成", "PatientList", "DoctorHome", new { PatientId = @Model.PatientId }, null)</li>
+        <li>@Html.ActionLink("下一步", "ClinicInfo", "PatientInfo", new { PatientId = @Model.PatientId }, null)</li>
+        <li>@Html.ActionLink("上一步", "ModuleProfile", "DoctorHome", new { PatientId = @Model.PatientId }, null)</li>
     </ul>
 
 <div id="HCDiv" style="margin: 1.0em 0 1.0em 0; width: 100%; border: 2px dotted #3567d1; padding: 0 2.0em 2.0em 2.0em;">
@@ -209,6 +201,9 @@
         $("#nav a").attr("id", ""); //Reset id's 
         $("#nav li:eq(4) a").attr("id", "currentnav");
 
+        $("#menu li:eq(2) a").html("历史记录");
+        $("#menu li:eq(2) a").attr("href", "/DoctorHome/HistoryRecord");
+
         $('#HCDataTable').DataTable({
             "oLanguage": {//语言国际化
                 "sUrl": "/Content/jquery.dataTable.cn.txt"
@@ -220,12 +215,6 @@
             "bFilter": true
         });
         //$('#HC' + i + 'Div').hide();
-        $("#menu li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
-        if ($("#menu li:eq(0) a").attr("href") == "/DoctorHome/HealthCoachPatientList") {
-            $("#nav li:eq(4) a").html("推荐医生");
-            $("h2").text("选择医生");
-        }
-        $("#Redirect li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
     });
 
     //点击编辑按钮

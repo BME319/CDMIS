@@ -10,6 +10,8 @@ using System.Collections;
 using CDMIS.OtherCs;
 using CDMIS.CommonLibrary;
 using System.Net.Http;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace CDMIS.Controllers
 {
@@ -22,7 +24,7 @@ namespace CDMIS.Controllers
         WebReferenceJC.BsWebService regionCenterWeb = new WebReferenceJC.BsWebService();
 
         //public static string user.UserId = "D003";  //合并时，用user.UserId替换_UserId
-        public static DataSet _DS_PatientList = new DataSet();
+        public static List<PatientDetail> _DS_PatientList = new List<PatientDetail>();
         public static DataSet _DS_AlertList = new DataSet();
         DataTable _DT_Module = new DataTable();
         #endregion
@@ -59,13 +61,7 @@ namespace CDMIS.Controllers
         {
             var user = Session["CurrentUser"] as UserAndRole;
             PatientListViewModel patientListView = new PatientListViewModel(user.UserId);
-            _DS_PatientList = GetPatientListByDoctorId(user.UserId);
-            DataTable dt = new DataTable();
-            if (_DS_PatientList.Tables.Count != 0)
-            {
-                //Default: Get Patients from Fisrt Module ZAM 2015-1-20
-                dt = _DS_PatientList.Tables[0];
-            }
+            _DS_PatientList = GetPatientListByDoctorId(user.UserId, 7);
             patientListView.AdvancedSearchEnable = "0";
             if (PatientId != null && PatientId != "")
             {
@@ -78,12 +74,11 @@ namespace CDMIS.Controllers
             int genderType = Convert.ToInt32(patientListView.GenderSelected);
             int careLevel = Convert.ToInt32(patientListView.CareLevelSelected);
             string moduleSelected = patientListView.ModuleSelected == null ? "" : patientListView.ModuleSelected; ;
-            int alertStatus = Convert.ToInt32(patientListView.AlertStatusSelected);
+            int Status = Convert.ToInt32(patientListView.StatusSelected);
             patientListView.DoctorId = user.UserId;
 
             //从网页端筛选患者
-            dt = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, alertStatus, patientListView.DoctorId);
-            patientListView.PatientList = this.InitialPatientList(dt);
+            patientListView.PatientList = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, Status, patientListView.DoctorId);
             return PartialView(patientListView);
         }
 
@@ -93,7 +88,6 @@ namespace CDMIS.Controllers
         public ActionResult PatientListSearch(PatientListViewModel patientListView, FormCollection formCollection)
         {
             var user = Session["CurrentUser"] as UserAndRole;
-            DataTable dt = new DataTable();
 
             //GetPatientsBySearchConditions()
             string patientId = patientListView.PatientId == null ? "" : patientListView.PatientId;
@@ -101,12 +95,11 @@ namespace CDMIS.Controllers
             int genderType = Convert.ToInt32(patientListView.GenderSelected);
             int careLevel = Convert.ToInt32(patientListView.CareLevelSelected);
             string moduleSelected = patientListView.ModuleSelected == null ? "" : patientListView.ModuleSelected; ;
-            int alertStatus = Convert.ToInt32(patientListView.AlertStatusSelected);
+            int Status = Convert.ToInt32(patientListView.StatusSelected);
             patientListView.DoctorId = user.UserId;
 
             //从网页端筛选患者
-            dt = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, alertStatus, patientListView.DoctorId);
-            patientListView.PatientList = this.InitialPatientList(dt);
+            patientListView.PatientList = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, Status, patientListView.DoctorId);
             return PartialView("PatientList", patientListView);
         }
 
@@ -118,26 +111,93 @@ namespace CDMIS.Controllers
             var user = Session["CurrentUser"] as UserAndRole;
 
             //Get PatientList from database
-            _DS_PatientList = GetPatientListByDoctorId(user.UserId);
+            _DS_PatientList = GetPatientListByDoctorId(user.UserId, 7);
 
-            DataTable dt = new DataTable();
             //GetPatientsBySearchConditions()
             string patientId = patientListView.PatientId == null ? "" : patientListView.PatientId;
             string patientName = patientListView.PatientName == null ? "" : patientListView.PatientName;
             int genderType = Convert.ToInt32(patientListView.GenderSelected);
             int careLevel = Convert.ToInt32(patientListView.CareLevelSelected);
             string moduleSelected = patientListView.ModuleSelected == null ? "" : patientListView.ModuleSelected; ;
-            int alertStatus = Convert.ToInt32(patientListView.AlertStatusSelected);
+            int Status = Convert.ToInt32(patientListView.StatusSelected);
             patientListView.DoctorId = user.UserId;
-            //从网页端筛选患者
-            dt = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, alertStatus, patientListView.DoctorId);
-            patientListView.PatientList = this.InitialPatientList(dt);
 
+            //从网页端筛选患者
+            patientListView.PatientList = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, Status, patientListView.DoctorId);
             return PartialView("PatientList", patientListView);
         }
 
+        public ActionResult HistoryRecord(string PatientId)
+        {
+            var user = Session["CurrentUser"] as UserAndRole;
+            PatientListViewModel patientListView = new PatientListViewModel(user.UserId);
+            _DS_PatientList = GetPatientListByDoctorId(user.UserId, 8);
+            patientListView.AdvancedSearchEnable = "0";
+            if (PatientId != null && PatientId != "")
+            {
+                patientListView.PatientId = PatientId;
+            }
 
-        //修改关注等级
+            //GetPatientsBySearchConditions()
+            string patientId = patientListView.PatientId == null ? "" : patientListView.PatientId;
+            string patientName = patientListView.PatientName == null ? "" : patientListView.PatientName;
+            int genderType = Convert.ToInt32(patientListView.GenderSelected);
+            int careLevel = Convert.ToInt32(patientListView.CareLevelSelected);
+            string moduleSelected = patientListView.ModuleSelected == null ? "" : patientListView.ModuleSelected; ;
+            int Status = Convert.ToInt32(patientListView.StatusSelected);
+            patientListView.DoctorId = user.UserId;
+
+            //从网页端筛选患者
+            patientListView.PatientList = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, Status, patientListView.DoctorId);
+            return PartialView(patientListView);
+        }
+
+        //患者列表（查看）
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "HistoryRecordSearch")]
+        public ActionResult HistoryRecordSearch(PatientListViewModel patientListView, FormCollection formCollection)
+        {
+            var user = Session["CurrentUser"] as UserAndRole;
+
+            //GetPatientsBySearchConditions()
+            string patientId = patientListView.PatientId == null ? "" : patientListView.PatientId;
+            string patientName = patientListView.PatientName == null ? "" : patientListView.PatientName;
+            int genderType = Convert.ToInt32(patientListView.GenderSelected);
+            int careLevel = Convert.ToInt32(patientListView.CareLevelSelected);
+            string moduleSelected = patientListView.ModuleSelected == null ? "" : patientListView.ModuleSelected; ;
+            int Status = Convert.ToInt32(patientListView.StatusSelected);
+            patientListView.DoctorId = user.UserId;
+
+            //从网页端筛选患者
+            patientListView.PatientList = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, Status, patientListView.DoctorId);
+            return PartialView("HistoryRecord", patientListView);
+        }
+
+        //患者列表（刷新）
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "HistoryRecordRefresh")]
+        public ActionResult HistoryRecordRefresh(PatientListViewModel patientListView, FormCollection formCollection)
+        {
+            var user = Session["CurrentUser"] as UserAndRole;
+
+            //Get PatientList from database
+            _DS_PatientList = GetPatientListByDoctorId(user.UserId, 8);
+
+            //GetPatientsBySearchConditions()
+            string patientId = patientListView.PatientId == null ? "" : patientListView.PatientId;
+            string patientName = patientListView.PatientName == null ? "" : patientListView.PatientName;
+            int genderType = Convert.ToInt32(patientListView.GenderSelected);
+            int careLevel = Convert.ToInt32(patientListView.CareLevelSelected);
+            string moduleSelected = patientListView.ModuleSelected == null ? "" : patientListView.ModuleSelected; ;
+            int Status = Convert.ToInt32(patientListView.StatusSelected);
+            patientListView.DoctorId = user.UserId;
+
+            //从网页端筛选患者
+            patientListView.PatientList = GetPatientListByConditions(patientId, patientName, genderType, careLevel, moduleSelected, Status, patientListView.DoctorId);
+            return PartialView("HistoryRecord", patientListView);
+        }
+
+        /*修改关注等级
         public JsonResult ChangeCareLevel(string patientId, string doctorId, int carelevel, string module)
         {
             var user = Session["CurrentUser"] as UserAndRole;
@@ -163,7 +223,7 @@ namespace CDMIS.Controllers
             }
             res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return res;
-        }
+        }*/
 
         #endregion
 
@@ -265,34 +325,20 @@ namespace CDMIS.Controllers
         #region <" 筛选患者/警报 ">
 
         //从医生所负责的所有患者（_DS_PatientList）中搜索符合条件的患者
-        public DataTable GetPatientListByConditions(string patientId, string patientName, int genderType, int careLevel, string moduleSelected, int alertStatus, string doctorId)
+        public List<PatientDetail> GetPatientListByConditions(string patientId, string patientName, int genderType, int careLevel, string moduleSelected, int Status, string doctorId)
         {
-            DataTable Patients = new DataTable();
-            //GetSelectTypeName
+            List<PatientDetail> Patients = new List<PatientDetail>();
             string genderText = genderType != 0 ? _ServicesSoapClient.GetMstTypeName("SexType", genderType) : "";
-
-            //select patients from DataSet _DS_PatientList
-            if (moduleSelected == "")
+            DataSet ModuleList = _ServicesSoapClient.GetModuleList();
+            string ModuleText = "";
+            foreach(DataRow Row in ModuleList.Tables[0].Rows)
             {
-
-                // search from all modules(Tables)
-                foreach (DataTable dt in _DS_PatientList.Tables)
+                if (Row[0].ToString() == moduleSelected)
                 {
-                    string module = dt.TableName;
-                    DataTable dt_patients = SelectPatientsfuzzy(dt, patientId, patientName, genderText, careLevel, alertStatus);
-                    foreach (DataRow dr in dt_patients.Rows)
-                    {
-                        dr["Module"] = this.GetModuleName(module);
-                    }
-                    Patients.Merge(dt_patients);
+                    ModuleText = Row[1].ToString();
                 }
             }
-            else
-            {
-                //search from single module (Table)
-                DataTable dt = _DS_PatientList.Tables[moduleSelected];
-                Patients.Merge(SelectPatientsfuzzy(dt, patientId, patientName, genderText, careLevel, alertStatus));
-            }
+            Patients = SelectPatientsfuzzy(patientId, patientName, genderText, careLevel, ModuleText, Status);
             return Patients;
         }
 
@@ -309,46 +355,28 @@ namespace CDMIS.Controllers
             return dt_SelectedPatients;
         }
 
-        public DataTable SelectPatientsfuzzy(DataTable dt, string patientId, string patientName, string genderText, int careLevel, int alertStatus)
+        public List<PatientDetail> SelectPatientsfuzzy(string patientId, string patientName, string genderText, int careLevel, string ModuleText, int Status)
         {
-            DataTable dt_SelectedPatients = new DataTable();
-            if (dt != null)
-            {
-                dt_SelectedPatients = dt.Clone();
-            }
+            List<PatientDetail> dt_SelectedPatients = _DS_PatientList;
             //Operator LIKE is used to include only values that match a pattern with wildcards. Wildcard character is * or %.
-            string filterExpression = "";
-            filterExpression += "PatientId LIKE \'%" + patientId + "%'";
-            filterExpression += "AND PatientName LIKE \'%" + patientName + "%'";
+            dt_SelectedPatients = dt_SelectedPatients.FindAll(delegate(PatientDetail x) { return x.UserID.IndexOf(patientId) != -1; });
+            dt_SelectedPatients = dt_SelectedPatients.FindAll(delegate(PatientDetail x) { return x.UserName.IndexOf(patientName) != -1; });
             if (genderText != "")
             {
-                filterExpression += "AND Gender LIKE \'%" + genderText + "%'";
+                dt_SelectedPatients = dt_SelectedPatients.FindAll(delegate(PatientDetail x) { return x.GenderText == genderText; });
             }
             if (careLevel != 0)
             {
-                filterExpression += "AND CareLevel = " + careLevel;
+                dt_SelectedPatients = dt_SelectedPatients.FindAll(delegate(PatientDetail x) { return x.CareLevel == careLevel; });
             }
-            if (alertStatus != 0)
+            if (Status != 0 && Status != 7 && Status != 8)
             {
-                if (alertStatus == 1) //1: 未处理
-                {
-                    filterExpression += "AND AlertNumber > 0";
-                }
-                else
-                {
-                    filterExpression += "AND AlertNumber = 0";
-                }
+                dt_SelectedPatients = dt_SelectedPatients.FindAll(delegate(PatientDetail x) { return x.Status == Status; });
             }
-            DataRow[] drArr = null;
-            if (dt != null)
+            if (ModuleText != "")
             {
-                drArr = dt.Select(filterExpression);
-                for (int i = 0; i < drArr.Length; i++)
-                {
-                    dt_SelectedPatients.ImportRow(drArr[i]);
-                }
+                dt_SelectedPatients = dt_SelectedPatients.FindAll(delegate(PatientDetail x) { return x.Module == ModuleText; });
             }
-            //DataRow[] drArr = dt.Select("PatientId LIKE \'" + patientId + "%' AND PatientName LIKE \'%" + patientName + "%'");
             return dt_SelectedPatients;
         }
 
@@ -386,21 +414,52 @@ namespace CDMIS.Controllers
         #region <" 初始化患者/ 初始化警报 ">
 
         //从数据库获取医生所负责的所有患者，按模块分Table存放
-        public DataSet GetPatientListByDoctorId(string doctorId)
+        public List<PatientDetail> GetPatientListByDoctorId(string doctorId, int Status)
         {
-            try
+            List<PatientDetail> List = new List<PatientDetail>();
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://121.43.107.106:9000/");
+            HttpResponseMessage response = client.GetAsync("Api/v1/Users/Consultations?DoctorId=" + doctorId + "&Status=" + Status.ToString()).Result;
+            if (response.IsSuccessStatusCode)
             {
-                DataSet ds = _ServicesSoapClient.GetPatientsByDoctorId(doctorId, "", "Doctor");
-                return ds;
+                if (response.Content.ReadAsStringAsync().Result != "[]")
+                {
+                    string[] Patients = response.Content.ReadAsStringAsync().Result.Split(new string[] { "},{\"", "[{\"", "}]" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string Patient in Patients)
+                    {
+                        string[] PatientInfo = Patient.Split(new string[] { "\",\"", "\":\"", "\":", ",\"" }, StringSplitOptions.None);
+                        string PhotoAddress = "";
+                        response = client.GetAsync("Api/v1/Users/BasicDtlValue?UserId=" + PatientInfo[1] + "&CategoryCode=Contact&ItemCode=Contact001_4&ItemSeq=1").Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            PhotoAddress = response.Content.ReadAsStringAsync().Result;
+                            PhotoAddress = PhotoAddress.Substring(11, PhotoAddress.Length - 13);
+                            if (PhotoAddress == "ul")
+                            {
+                                PhotoAddress = "";
+                            }
+                        }
+                        List.Add(new PatientDetail
+                        {
+                            UserID = PatientInfo[1],
+                            UserName = PatientInfo[3],
+                            Gender = PatientInfo[5],
+                            GenderText = _ServicesSoapClient.GetMstTypeName("SexType", Convert.ToInt32(PatientInfo[5])),
+                            Age = Convert.ToInt32(PatientInfo[7]),
+                            Module = PatientInfo[9],
+                            ApplicationDate = PatientInfo[11].Substring(0,10),
+                            CareLevel = Convert.ToInt32(PatientInfo[25]),
+                            Status =  Convert.ToInt32(PatientInfo[27]),
+                            StatusText = _ServicesSoapClient.GetMstTypeName("ConsultStatus", Convert.ToInt32(PatientInfo[27])),
+                            PhotoAddress = PhotoAddress
+                        });
+                    }
+                }
             }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            return List;
         }
 
-        //初始化ViewModel中的患者列表
+        /*初始化ViewModel中的患者列表
         public List<Models.PatientBasicInfo> InitialPatientList(DataTable Patients)
         {
             List<Models.PatientBasicInfo> PatientList = new List<Models.PatientBasicInfo>();
@@ -424,7 +483,7 @@ namespace CDMIS.Controllers
                 PatientList.Add(patientbasic);
             }
             return PatientList;
-        }
+        }*/
 
         //从数据库获取医生所负责的所有患者警报
         public DataSet GetAlertListByDoctorId(string doctorId)
@@ -3661,16 +3720,8 @@ namespace CDMIS.Controllers
                 if (PatientId != null && PatientId != "")
                 {
                     MMVM.PatientId = PatientId;
-                    if (user.Role == "Doctor")
-                    {
-                        MMVM.HealthCoachInfoList = GetHealthCareList(MMVM.PatientId);
-                        MMVM.HealthCoachList = GetHealthCoachInfoList("HealthCoach");
-                    }
-                    else
-                    {
-                        MMVM.HealthCoachInfoList = GetDoctorCareInfo(MMVM.PatientId);
-                        MMVM.HealthCoachList = GetHealthCoachInfoList("Doctor");
-                    }
+                    MMVM.HealthCoachInfoList = GetHealthCareList(MMVM.PatientId);
+                    MMVM.HealthCoachList = GetHealthCoachInfoList("HealthCoach");
                 }
                 return View(MMVM);
             }
@@ -3735,54 +3786,6 @@ namespace CDMIS.Controllers
             return hclist;
         }
 
-        public List<HealthCoach> GetDoctorCareInfo(string PatientId)
-        {
-            var user = Session["CurrentUser"] as UserAndRole;
-            List<HealthCoach> dclist = new List<HealthCoach>();
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://121.43.107.106:9000/");
-            HttpResponseMessage response = client.GetAsync("Api/v1/Users/HModulesByID?PatientId=" + PatientId + "&DoctorId=" + user.UserId).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                if (response.Content.ReadAsStringAsync().Result != "[]")
-                {
-                    string[] Modules = response.Content.ReadAsStringAsync().Result.Split(new string[] { "},{", "[{\"", "\"}]" }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string Module in Modules)
-                    {
-                        string[] Detail = Module.Split(new string[] { "\",\"", "\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                        DataTable dcOfPat = _ServicesSoapClient.GetConForPatient(PatientId, Detail[1].Substring(1)).Tables[0];
-                        foreach (DataRow line in dcOfPat.Rows)
-                        {
-                            HealthCoach dc = new HealthCoach()
-                            {
-                                ItemSeq = line[2].ToString(),
-                                HealthCoachId = line[0].ToString(),
-                                HealthCoachName = _ServicesSoapClient.GetUserName(line[0].ToString()),
-                                HCDivName = Detail[1],
-                                DataTableName = Detail[3],
-                                HealthCoachList = GetHealthCoachInfoList("Doctor")
-                            };
-                            dclist.Add(dc);
-                        }
-                        if (dcOfPat.Rows.Count == 0)
-                        {
-                            HealthCoach dc = new HealthCoach()
-                            {
-                                ItemSeq = "",
-                                HealthCoachId = "0",
-                                HealthCoachName = "",
-                                HCDivName = Detail[1],
-                                DataTableName = Detail[3],
-                                HealthCoachList = GetHealthCoachInfoList("Doctor")
-                            };
-                            dclist.Add(dc);
-                        }
-                    }
-                }
-            }
-            return dclist;
-        }
-
         //获取健康专员列表
         public List<DoctorAndHCInfo> GetHealthCoachInfoList(string Type)
         {
@@ -3795,6 +3798,76 @@ namespace CDMIS.Controllers
             return DoctorList;
         }
         #endregion
-        
+
+        //求助医生
+        public ActionResult QuestionDoctor(string PatientId)
+        {
+            try
+            {
+                var user = Session["CurrentUser"] as UserAndRole;
+                QuestionDoctorViewModel MMVM = new QuestionDoctorViewModel();
+                if (PatientId != null && PatientId != "")
+                {
+                    MMVM.PatientId = PatientId;
+                    List<HealthCoach> dclist = new List<HealthCoach>();
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://121.43.107.106:9000/");
+                    HttpResponseMessage response = client.GetAsync("Api/v1/Users/HModulesByID?PatientId=" + PatientId + "&DoctorId=" + user.UserId).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        if (response.Content.ReadAsStringAsync().Result != "[]")
+                        {
+                            string[] Modules = response.Content.ReadAsStringAsync().Result.Split(new string[] { "},{", "[{\"", "\"}]" }, StringSplitOptions.RemoveEmptyEntries);
+                            foreach (string Module in Modules)
+                            {
+                                string[] Detail = Module.Split(new string[] { "\",\"", "\":\"" }, StringSplitOptions.RemoveEmptyEntries);
+                                HealthCoach dc = new HealthCoach()
+                                {
+                                    ItemSeq = "",
+                                    HealthCoachId = "0",
+                                    HealthCoachName = "",
+                                    HCDivName = Detail[1],
+                                    DataTableName = Detail[3],
+                                    HealthCoachList = GetHealthCoachInfoList("Doctor")
+                                };
+                                dclist.Add(dc);
+                            }
+                        }
+                    }
+                    MMVM.HealthCoachInfoList = dclist;
+                    MMVM.HealthCoachList = GetHealthCoachInfoList("Doctor");
+                }
+                return View(MMVM);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        //插入Consult表
+        public JsonResult SetConsultation(string DoctorId, string PatientId, string Module, string Title, string Description, int Emergency)
+        {
+            var res = new JsonResult();
+            var user = Session["CurrentUser"] as UserAndRole;
+            string ApplicationTime = _ServicesSoapClient.GetServerTime();
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://121.43.107.106:9000/");
+            var requestJson = JsonConvert.SerializeObject(new { DoctorId = DoctorId, PatientId = PatientId, ApplicationTime = ApplicationTime, HealthCoachId = user.UserId, Module = Module, Title = Title, Description = Description, ConsultTime = "9999-12-31 23:59:59", Solution = "", Emergency = Emergency, Status = 1, Redundancy = "", revUserId = user.UserId, TerminalName = user.TerminalName, TerminalIP = user.TerminalIP, DeviceType = user.DeviceType });
+            HttpContent httpContent = new StringContent(requestJson);
+            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = client.PostAsync("Api/v1/Users/Consultation", httpContent).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                res.Data = true;
+            }
+            else
+            {
+                res.Data = false;
+            }
+            res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+            return res;
+        }
+
     }
 }
