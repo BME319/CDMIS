@@ -166,3 +166,7 @@ E:\Program\task\github\CDMIS\CDMIS\bin\CDMIS.dll.config
 E:\Program\task\github\CDMIS\CDMIS\bin\System.Net.Http.dll
 E:\Program\task\github\CDMIS\CDMIS\bin\System.Net.Http.xml
 E:\Program\task\github\CDMIS\CDMIS\bin\zh-Hans\System.Net.Http.resources.dll
+F:\Work\chronic disease management\github\CDMIS\CDMIS\bin\CDMIS.dll.config
+F:\Work\chronic disease management\github\CDMIS\CDMIS\bin\System.Net.Http.dll
+F:\Work\chronic disease management\github\CDMIS\CDMIS\bin\System.Net.Http.xml
+F:\Work\chronic disease management\github\CDMIS\CDMIS\bin\zh-Hans\System.Net.Http.resources.dll

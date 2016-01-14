@@ -18,15 +18,35 @@ namespace CDMIS.ViewModels
         {
             list = new List<PatientExport>();
         }
+    }
 
-        public class ClinicDataExport
+
+    public class ClinicDataExport
+    {
+        public string HealthCoachSelected { get; set; }
+        public string ModuleSelected { get; set; }
+        public string TableSelected { get; set; }
+        public List<PatientExport> list { get; set; }
+
+        public List<SelectListItem> getTableList()
         {
-            public List<SelectListItem> tableList { get; set; }
+            return CommonVariables.getTableList();
+        }
 
-            public ClinicDataExport()
-            {
-                tableList = new List<SelectListItem>();
-            }
+        public List<SelectListItem> getHealthCoachList()
+        {
+            return CommonVariables.getHealthCoachList();
+        }
+
+        public List<SelectListItem> getModuleList()
+        {
+            return CommonVariables.GetModuleList();
+            
+        }
+        public ClinicDataExport()
+        {
+            list = new List<PatientExport>();
+
         }
     }
 }

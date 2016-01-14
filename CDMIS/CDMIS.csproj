@@ -106,6 +106,7 @@
     <Compile Include="Models\ClinicalInfo.cs" />
     <Compile Include="Models\DataDictionary.cs" />
     <Compile Include="Models\HealthEducation.cs" />
+    <Compile Include="Models\Home.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\PatientInfo.cs" />
     <Compile Include="Models\UserAndAuthority.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="ViewModels\Clinic.cs" />
     <Compile Include="ViewModels\Dictionary.cs" />
     <Compile Include="ViewModels\HealthEducationList.cs" />
+    <Compile Include="ViewModels\Home.cs" />
     <Compile Include="ViewModels\Patient.cs" />
     <Compile Include="ViewModels\Personal.cs" />
     <Compile Include="ViewModels\UserManagement.cs" />
@@ -317,6 +319,7 @@
     <Content Include="Scripts\serial.js" />
     <Content Include="Scripts\sticky.full.js" />
     <Content Include="Scripts\Subwindow.js" />
+    <None Include="Properties\PublishProfiles\Profile1.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -627,6 +630,7 @@
     <Content Include="Views\Dict\UnCompOperation.cshtml" />
     <Content Include="Views\DoctorHome\HealthCoachManagement.cshtml" />
     <Content Include="Views\DoctorHome\HealthCoachPatientList.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <None Include="Web References\WebReferenceJC\Bs.wsdl" />
     <None Include="Web References\WebReferenceJC\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
@@ -638,9 +642,6 @@
     <None Include="Web References\WebReferenceJC\resSetPatient.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

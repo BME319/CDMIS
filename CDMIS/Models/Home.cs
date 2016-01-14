@@ -18,5 +18,6 @@ namespace CDMIS.Models
         public string HUserId { get; set; }
         public string HospitalCode { get; set; }
         public string HospitalName { get; set; }
+        public string Description { get; set; }
     }
 }

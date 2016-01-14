@@ -897,6 +897,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetPatientsMatchByDoctorId">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="DoctorId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CategoryCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetPatientsMatchByDoctorIdResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetPatientsMatchByDoctorIdResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetPatientDetailInfo">
         <s:complexType>
           <s:sequence>
@@ -6226,6 +6248,7 @@
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="DoctorId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="VisitId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="UserRole" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -8634,6 +8657,12 @@
   </wsdl:message>
   <wsdl:message name="checkverificationSoapOut">
     <wsdl:part name="parameters" element="tns:checkverificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPatientsMatchByDoctorIdSoapIn">
+    <wsdl:part name="parameters" element="tns:GetPatientsMatchByDoctorId" />
+  </wsdl:message>
+  <wsdl:message name="GetPatientsMatchByDoctorIdSoapOut">
+    <wsdl:part name="parameters" element="tns:GetPatientsMatchByDoctorIdResponse" />
   </wsdl:message>
   <wsdl:message name="GetPatientDetailInfoSoapIn">
     <wsdl:part name="parameters" element="tns:GetPatientDetailInfo" />
@@ -11306,6 +11335,13 @@
   <wsdl:message name="checkverificationHttpGetOut">
     <wsdl:part name="Body" element="tns:int" />
   </wsdl:message>
+  <wsdl:message name="GetPatientsMatchByDoctorIdHttpGetIn">
+    <wsdl:part name="DoctorId" type="s:string" />
+    <wsdl:part name="CategoryCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetPatientsMatchByDoctorIdHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
   <wsdl:message name="GetPatientDetailInfoHttpGetIn">
     <wsdl:part name="UserId" type="s:string" />
   </wsdl:message>
@@ -13571,6 +13607,7 @@
   <wsdl:message name="GetPatientsByDoctorIdHttpGetIn">
     <wsdl:part name="DoctorId" type="s:string" />
     <wsdl:part name="VisitId" type="s:string" />
+    <wsdl:part name="UserRole" type="s:string" />
   </wsdl:message>
   <wsdl:message name="GetPatientsByDoctorIdHttpGetOut">
     <wsdl:part name="Body" element="tns:DataSet" />
@@ -14913,6 +14950,13 @@
   </wsdl:message>
   <wsdl:message name="checkverificationHttpPostOut">
     <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="GetPatientsMatchByDoctorIdHttpPostIn">
+    <wsdl:part name="DoctorId" type="s:string" />
+    <wsdl:part name="CategoryCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetPatientsMatchByDoctorIdHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
   </wsdl:message>
   <wsdl:message name="GetPatientDetailInfoHttpPostIn">
     <wsdl:part name="UserId" type="s:string" />
@@ -17179,6 +17223,7 @@
   <wsdl:message name="GetPatientsByDoctorIdHttpPostIn">
     <wsdl:part name="DoctorId" type="s:string" />
     <wsdl:part name="VisitId" type="s:string" />
+    <wsdl:part name="UserRole" type="s:string" />
   </wsdl:message>
   <wsdl:message name="GetPatientsByDoctorIdHttpPostOut">
     <wsdl:part name="Body" element="tns:DataSet" />
@@ -18369,6 +18414,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">验证短信验证码，Author：LY 2015-11-25</wsdl:documentation>
       <wsdl:input message="tns:checkverificationSoapIn" />
       <wsdl:output message="tns:checkverificationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取专员负责患者在院就诊列表 Table:Ps.DoctorInfoDetail  Author:CSQ 20160114</wsdl:documentation>
+      <wsdl:input message="tns:GetPatientsMatchByDoctorIdSoapIn" />
+      <wsdl:output message="tns:GetPatientsMatchByDoctorIdSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetPatientDetailInfo">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据用户名获取用户详细信息 Table：Ps.BasicInfoDetail Author:ZCY  2015-4-14</wsdl:documentation>
@@ -20511,6 +20561,11 @@
       <wsdl:input message="tns:checkverificationHttpGetIn" />
       <wsdl:output message="tns:checkverificationHttpGetOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取专员负责患者在院就诊列表 Table:Ps.DoctorInfoDetail  Author:CSQ 20160114</wsdl:documentation>
+      <wsdl:input message="tns:GetPatientsMatchByDoctorIdHttpGetIn" />
+      <wsdl:output message="tns:GetPatientsMatchByDoctorIdHttpGetOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetPatientDetailInfo">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据用户名获取用户详细信息 Table：Ps.BasicInfoDetail Author:ZCY  2015-4-14</wsdl:documentation>
       <wsdl:input message="tns:GetPatientDetailInfoHttpGetIn" />
@@ -22651,6 +22706,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">验证短信验证码，Author：LY 2015-11-25</wsdl:documentation>
       <wsdl:input message="tns:checkverificationHttpPostIn" />
       <wsdl:output message="tns:checkverificationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取专员负责患者在院就诊列表 Table:Ps.DoctorInfoDetail  Author:CSQ 20160114</wsdl:documentation>
+      <wsdl:input message="tns:GetPatientsMatchByDoctorIdHttpPostIn" />
+      <wsdl:output message="tns:GetPatientsMatchByDoctorIdHttpPostOut" />
     </wsdl:operation>
     <wsdl:operation name="GetPatientDetailInfo">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据用户名获取用户详细信息 Table：Ps.BasicInfoDetail Author:ZCY  2015-4-14</wsdl:documentation>
@@ -24987,6 +25047,15 @@
     </wsdl:operation>
     <wsdl:operation name="checkverification">
       <soap:operation soapAction="http://bme319.org/checkverification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <soap:operation soapAction="http://bme319.org/GetPatientsMatchByDoctorId" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -28849,6 +28918,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <soap12:operation soapAction="http://bme319.org/GetPatientsMatchByDoctorId" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetPatientDetailInfo">
       <soap12:operation soapAction="http://bme319.org/GetPatientDetailInfo" style="document" />
       <wsdl:input>
@@ -32704,6 +32782,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <http:operation location="/GetPatientsMatchByDoctorId" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetPatientDetailInfo">
       <http:operation location="/GetPatientDetailInfo" />
       <wsdl:input>
@@ -36538,6 +36625,15 @@
     </wsdl:operation>
     <wsdl:operation name="checkverification">
       <http:operation location="/checkverification" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientsMatchByDoctorId">
+      <http:operation location="/GetPatientsMatchByDoctorId" />
       <wsdl:input>
         <mime:content type="application/x-www-form-urlencoded" />
       </wsdl:input>

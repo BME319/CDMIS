@@ -109,6 +109,7 @@ namespace CDMIS.ViewModels
         {
             List<SelectListItem> ModuleList = new List<SelectListItem>();
             DataTable dt = _ServicesSoapClient.GetModuleList().Tables[0];
+            ModuleList.Add(new SelectListItem { Text = "请选择", Value = "" });
             foreach (DataRow dr in dt.Rows)
             {
                 ModuleList.Add(new SelectListItem { Text = dr["Name"].ToString(), Value = dr["Code"].ToString() });
@@ -642,6 +643,33 @@ namespace CDMIS.ViewModels
             }
             return Unit;
         }
+
+        public static List<SelectListItem> getTableList()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem { Text = "请选择", Value = "" });
+            list.Add(new SelectListItem { Text = "诊断信息", Value = "Ps.Diagnosis" });
+            list.Add(new SelectListItem { Text = "检查信息", Value = "Ps.Examination|Ps.ExamDetails" });
+            list.Add(new SelectListItem { Text = "检验信息", Value = "Ps.LabTest|Ps.LabTestDetails" });
+            list.Add(new SelectListItem { Text = "药物信息", Value = "Ps.DrugRecord" });
+            list.Add(new SelectListItem { Text = "手术信息", Value = "Ps.Operation" });
+
+            return list;
+        }
+
+        public static List<SelectListItem> getHealthCoachList() 
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            DataTable docList = _ServicesSoapClient.GetActiveUserByRole("HealthCoach").Tables[0];
+            list.Add(new SelectListItem { Text = "请选择", Value = "" });
+            foreach (DataRow DR in docList.Rows)
+            {
+                list.Add(new SelectListItem { Text = DR["UserName"].ToString(), Value = DR["UserId"].ToString() });
+            }
+            return list;
+        }
+
+
         #endregion
 
         #region <LS>

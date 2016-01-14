@@ -216,6 +216,10 @@ namespace CDMIS.ServiceReference {
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         int checkverification(string mobile, string smsType, string verification);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://bme319.org/GetPatientsMatchByDoctorId", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        System.Data.DataSet GetPatientsMatchByDoctorId(string DoctorId, string CategoryCode);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://bme319.org/GetPatientDetailInfo", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
         CDMIS.ServiceReference.PatientDetailInfo1 GetPatientDetailInfo(string UserId);
@@ -1385,7 +1389,7 @@ namespace CDMIS.ServiceReference {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://bme319.org/GetPatientsByDoctorId", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        System.Data.DataSet GetPatientsByDoctorId(string DoctorId, string VisitId);
+        System.Data.DataSet GetPatientsByDoctorId(string DoctorId, string VisitId, string UserRole);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://bme319.org/ChangCareLevel", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
@@ -5018,6 +5022,10 @@ namespace CDMIS.ServiceReference {
             return base.Channel.checkverification(mobile, smsType, verification);
         }
         
+        public System.Data.DataSet GetPatientsMatchByDoctorId(string DoctorId, string CategoryCode) {
+            return base.Channel.GetPatientsMatchByDoctorId(DoctorId, CategoryCode);
+        }
+        
         public CDMIS.ServiceReference.PatientDetailInfo1 GetPatientDetailInfo(string UserId) {
             return base.Channel.GetPatientDetailInfo(UserId);
         }
@@ -6194,8 +6202,8 @@ namespace CDMIS.ServiceReference {
             return base.Channel.GetServerLog();
         }
         
-        public System.Data.DataSet GetPatientsByDoctorId(string DoctorId, string VisitId) {
-            return base.Channel.GetPatientsByDoctorId(DoctorId, VisitId);
+        public System.Data.DataSet GetPatientsByDoctorId(string DoctorId, string VisitId, string UserRole) {
+            return base.Channel.GetPatientsByDoctorId(DoctorId, VisitId, UserRole);
         }
         
         public bool ChangCareLevel(string moduleType, string PatientId, string DoctorId, int carelevel, string revUserId, string pTerminalIP, string pTerminalName, int pDeviceType) {
