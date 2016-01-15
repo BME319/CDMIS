@@ -6,6 +6,7 @@ using CDMIS.ViewModels;
 using System.Data;
 using CDMIS.ServiceReference;
 using System;
+using System.IO;
 
 namespace CDMIS.Controllers
 {
@@ -52,7 +53,31 @@ namespace CDMIS.Controllers
             return list;
         }
 
-  
+        public JsonResult ExportPList(string json, string HCId)
+        {
+            var res = new JsonResult();
+
+            bool flag = true;
+            string FileN = HCId + DateTime.Now.ToString("yyyyMMdd");
+
+            FileStream fs1 = new FileStream("D:\\"+FileN+".txt", FileMode.Create, FileAccess.Write);//创建写入文件 
+            StreamWriter sw = new StreamWriter(fs1);
+            sw.Write(json);//开始写入值
+
+            sw.Close();
+            fs1.Close();
+
+            if (flag)
+            {
+                res.Data = true;
+            }
+            else
+            {
+                res.Data = false;
+            }
+            res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+            return res;
+        }
 
     }
 }
