@@ -24,6 +24,7 @@ namespace CDMIS.ViewModels
     public class ClinicDataExport
     {
         public string HealthCoachSelected { get; set; }
+        public string HealthCoachName { get; set; }
         public string ModuleSelected { get; set; }
         public string TableSelected { get; set; }
         public List<PatientExport> list { get; set; }

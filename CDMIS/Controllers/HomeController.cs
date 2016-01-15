@@ -17,7 +17,11 @@ namespace CDMIS.Controllers
 
         public ActionResult Index()
         {
+            var user = Session["CurrentUser"] as UserAndRole;
+
             ClinicDataExport model = new ClinicDataExport();
+            model.HealthCoachSelected  = user.UserId;
+            model.HealthCoachName = _ServicesSoapClient.GetUserName(user.UserId);
             return View(model);
         }
 

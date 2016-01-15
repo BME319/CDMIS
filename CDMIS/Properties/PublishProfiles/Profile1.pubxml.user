@@ -10,10 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/CDMIS.dll">
-      <publishTime>01/14/2016 10:02:58</publishTime>
+      <publishTime>01/15/2016 15:58:35</publishTime>
     </File>
     <File Include="bin/CDMIS.XmlSerializers.dll">
-      <publishTime>01/14/2016 10:02:58</publishTime>
+      <publishTime>01/15/2016 15:58:36</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>10/28/2015 22:41:16</publishTime>
@@ -1096,7 +1096,7 @@
       <publishTime>01/14/2016 09:47:41</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>01/14/2016 09:47:41</publishTime>
+      <publishTime>01/15/2016 15:55:57</publishTime>
     </File>
     <File Include="Views/MailBox/Draft.cshtml">
       <publishTime>10/28/2015 22:41:16</publishTime>
@@ -1127,6 +1127,9 @@
     </File>
     <File Include="Views/MailBox/Write.cshtml">
       <publishTime>10/28/2015 22:41:16</publishTime>
+    </File>
+    <File Include="Views/Management/ImportClinicalData.cshtml">
+      <publishTime>01/14/2016 19:56:34</publishTime>
     </File>
     <File Include="Views/Management/Index.cshtml">
       <publishTime>12/02/2015 18:39:07</publishTime>
@@ -1240,7 +1243,7 @@
       <publishTime>10/28/2015 22:41:16</publishTime>
     </File>
     <File Include="Views/Shared/_AdminLayout.cshtml">
-      <publishTime>01/14/2016 09:47:41</publishTime>
+      <publishTime>01/14/2016 16:53:37</publishTime>
     </File>
     <File Include="Views/Shared/_DoctorLayout.cshtml">
       <publishTime>01/14/2016 09:47:41</publishTime>
@@ -1261,7 +1264,7 @@
       <publishTime>10/28/2015 22:41:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/07/2016 20:31:36</publishTime>
+      <publishTime>01/15/2016 15:58:37</publishTime>
     </File>
   </ItemGroup>
 </Project>
