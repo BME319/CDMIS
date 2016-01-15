@@ -240,8 +240,31 @@
             patients[i] = pt;
 
         }
+        //alert(patients);
         var json = JSON.stringify(patients);
-        alert(json);
+        //alert(json);
+        var HCId = $('#HealthCoachName').val().trim();
+        //alert(HCId);
+        $.ajax({
+            url: "/Home/ExportPList",
+            type: "POST",
+            dataType: "json",
+            async: false,
+            data: {
+                json: json,
+                HCId: HCId
+            },  //输入参数
+            success: function (res) {
+                if (res == true) {
+                    alert("成功！");
+                }
+                else {
+                    alert("数据插入失败，请重新输入！");
+                }
+            }
+        });
+
+
     })
 
   
