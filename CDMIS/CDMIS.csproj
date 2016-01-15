@@ -631,6 +631,7 @@
     <Content Include="Views\DoctorHome\HealthCoachManagement.cshtml" />
     <Content Include="Views\DoctorHome\HealthCoachPatientList.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Management\ImportClinicalData.cshtml" />
     <None Include="Web References\WebReferenceJC\Bs.wsdl" />
     <None Include="Web References\WebReferenceJC\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>

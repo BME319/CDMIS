@@ -14,6 +14,15 @@ namespace CDMIS.ViewModels
     {
     }
 
+    public class ClinicalDataImport
+    {
+        public string TableSelected { get; set; }
+        public List<SelectListItem> getTableList()
+        {
+            return CommonVariables.getTableList();
+        }
+    }
+
     //参数图画图     新增
     public class Picture
     {

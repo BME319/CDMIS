@@ -1,0 +1,67 @@
+﻿@model CDMIS.ViewModels.ClinicalDataImport
+@{
+    ViewBag.Title = "导入临床数据";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="../../Content/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="../../Content/simpleModal.css" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jquery-1.11.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")" type="text/javascript"></script>
+    <script type="text/javascript" src="../../Scripts/jquery.dataTables.js"></script>
+
+ <div class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">
+            数据选择
+        </label>
+        <div class="col-sm-2">
+            @Html.DropDownListFor(model => model.TableSelected, Model.getTableList(), new { id = "TableName", @class = "form-control" ,onchange="showHistory()"})
+        </div>
+
+        <div class="col-sm-4">
+            <input type="file" name="file" style="height: 30px; font-size: 1.4em;width: 270px;" />
+        </div>
+        <div class="col-sm-2" style="text-align: right;">
+            <input type="submit" id="select" value="导入" class="btn btn-primary" style="margin-right: 10px" />
+        </div>
+        <label class="col-sm-2 control-label">
+        </label>
+    </div>
+    <div class="form-group history" style="display:none">
+        <label class="col-sm-2 control-label">
+            导入记录
+        </label>
+        <div class="col-sm-10">
+        </div>
+    </div>
+    <div class="form-group history" style="display:none">
+        <label class="col-sm-2 control-label">
+            检查信息
+        </label>
+        <div class="col-sm-10">
+            啊哈哈哈哈哈哈哈
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function showHistory() {
+        if ($("#TableName").val() == "")
+        {
+            $(".history").hide();
+        }
+        else
+        {
+            $(".history").show();
+        }
+    }
+
+    $(document).on("click", "#select", function () {
+        //点击导入按钮，调用后台方法
+
+    })
+
+</script>
+
