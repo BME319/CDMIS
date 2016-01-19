@@ -116,6 +116,9 @@
                         <th width="10px">
                             照片
                         </th>
+                        <th width="10px">
+                            编号
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="PatientListTbody">
@@ -162,65 +165,70 @@
                                         width: 24px; height: 24px; margin-right: 5px" title="发信" />
                                     </a>
                                     <a>
-                                        <input id="MessageLink" class="OperationBtn" style="border: 0; background-image: url(../../Content/Image/mail.png);
+                                        <input id="AnswerQuestions" class="OperationBtn" style="border: 0; background-image: url(../../Content/Image/mail.png);
                                         background-repeat: no-repeat; background-color: transparent; cursor: pointer;
-                                        width: 24px; height: 24px; margin-right: 5px" title="发信" />
+                                        width: 24px; height: 24px; margin-right: 5px" title="回答问题" />
                                     </a>
                                 </td>
                                 @*<td width="120px" style="cursor: pointer; color: #4573D5">@item.UserId
                                     </td>*@
                                 <td width="110px">
                                     @item.UserID
-                            </td>
-                            <td width="70px">
-                                @item.UserName
-                        </td>
-                        <td width="60px">
-                            @item.GenderText
-                    </td>
-                    <td width="60px">
-                        @item.Age
-                </td>
-                <td width="110px">
-                    @item.Module
-            </td>
-            <td width="100px">
-                @item.ApplicationDate
-        </td>
-        <td width="90px">
-            @item.StatusText
-    </td>
-    <td width="100px" align="center">
-        @switch (@item.CareLevel)
-        {
-            case 1:
-                {
-                    <input id="CareLevel1" disabled="disabled" style="border: 0; background-image: url(../../Content/Image/carelevel1.png);
-                                        background-repeat: no-repeat; background-color: transparent; width: 25px; height: 23px;
-                                        margin-right: 5px" title="普通" />
-                    break;
-                }
-            case 2:
-                {
-                    <input id="CareLevel2" disabled="disabled" style="border: 0; background-image: url(../../Content/Image/carelevel2.png);
-                                        background-repeat: no-repeat; background-color: transparent; width: 25px; height: 23px;
-                                        margin-right: 5px" title="加急" />
-                    break;
-                }
-            case 3:
-                {
-                    <input id="CareLevel3" disabled="disabled" style="border: 0; background-image: url(../../Content/Image/carelevel3.png);
-                                        background-repeat: no-repeat; background-color: transparent; width: 25px; height: 23px;
-                                        margin-right: 5px" title="请马上处理" />
-                    break;
-                }
-        }
-    </td>
-    <td width="10px">
-        @item.CareLevel
-</td>
-<td width="10px">@item.PhotoAddress</td>
-</tr>
+                                </td>
+                                <td width="70px">
+                                    @item.UserName
+                                </td>
+                                <td width="60px">
+                                    @item.GenderText
+                                </td>
+                                <td width="60px">
+                                    @item.Age
+                                </td>
+                                <td width="110px">
+                                    @item.Module
+                                </td>
+                                <td width="100px">
+                                    @item.ApplicationDate
+                                </td>
+                                <td width="90px">
+                                    @item.StatusText
+                                </td>
+                                <td width="100px" align="center">
+                                    @switch (@item.CareLevel)
+                                    {
+                                        case 1:
+                                            {
+                                                <input id="CareLevel1" disabled="disabled" style="border: 0; background-image: url(../../Content/Image/carelevel1.png);
+                                                                    background-repeat: no-repeat; background-color: transparent; width: 25px; height: 23px;
+                                                                    margin-right: 5px" title="普通" />
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                <input id="CareLevel2" disabled="disabled" style="border: 0; background-image: url(../../Content/Image/carelevel2.png);
+                                                                    background-repeat: no-repeat; background-color: transparent; width: 25px; height: 23px;
+                                                                    margin-right: 5px" title="加急" />
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                <input id="CareLevel3" disabled="disabled" style="border: 0; background-image: url(../../Content/Image/carelevel3.png);
+                                                                    background-repeat: no-repeat; background-color: transparent; width: 25px; height: 23px;
+                                                                    margin-right: 5px" title="请马上处理" />
+                                                break;
+                                            }
+                                    }
+                                </td>
+                                <td width="10px">
+                                    @item.CareLevel
+                                </td>
+                                <td width="10px">
+                                    @item.PhotoAddress
+                                </td>
+                                <td width="10px">
+                                    @item.SortNo
+                                </td>
+                            </tr>
                         }
                     }
                 </tbody>
@@ -312,7 +320,11 @@
                 "targets": [10],
                 "visible": false,
                 "searchable": false
-            }, { "bSortable": false, "aTargets": [0]}] //禁止某些列的排序功能
+            }, {
+                "targets": [11],
+                "visible": false,
+                "searchable": false
+            }, { "bSortable": false, "aTargets": [0] }] //禁止某些列的排序功能
         });
         $("#menu li:eq(0) a").attr("href", $("#BackToMain a:eq(4)").attr("href"));
 
@@ -379,6 +391,10 @@
                         overlayClose: true     //点击蒙层关闭窗口
                     });
                     break;
+                }
+            case "AnswerQuestions":
+                {
+
                 }
             default:
         }

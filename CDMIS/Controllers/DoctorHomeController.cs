@@ -451,7 +451,12 @@ namespace CDMIS.Controllers
                             CareLevel = Convert.ToInt32(PatientInfo[25]),
                             Status =  Convert.ToInt32(PatientInfo[27]),
                             StatusText = _ServicesSoapClient.GetMstTypeName("ConsultStatus", Convert.ToInt32(PatientInfo[27])),
-                            PhotoAddress = PhotoAddress
+                            PhotoAddress = PhotoAddress,
+                            SortNo = Convert.ToInt32(PatientInfo[29]),
+                            HealthCoachId = PatientInfo[13].ToString(),
+                            Title = PatientInfo[17].ToString(),
+                            Content = PatientInfo[19].ToString(),
+                            Answer = PatientInfo[23].ToString()
                         });
                     }
                 }
@@ -3254,15 +3259,15 @@ namespace CDMIS.Controllers
             {
                 DataRow DR_1 = SynDetailDT.Rows[0];
                 {
-                    SynDetailList.Add(DR_1["Name1"].ToString() + "|" + DR_1["Value1"].ToString() + "|" + DR_1["Date"].ToString().Substring(0, 10));
-                    SynDetailList.Add(DR_1["Name2"].ToString() + "|" + DR_1["Value2"].ToString() + "|" + DR_1["Date"].ToString().Substring(0, 10));
-                    SynDetailList.Add(DR_1["Name3"].ToString() + "|" + DR_1["Value3"].ToString() + "|" + DR_1["Date"].ToString().Substring(0, 10));
+                    SynDetailList.Add(DR_1["Name1"].ToString() + "|" + DR_1["Value1"].ToString() + "|" + DR_1["Date"].ToString().Substring(0, 10) + "|" + "name");
+                    SynDetailList.Add(DR_1["Name2"].ToString() + "|" + DR_1["Value2"].ToString() + "|" + DR_1["Date"].ToString().Substring(0, 10) + "|" + "name");
+                    SynDetailList.Add(DR_1["Name3"].ToString() + "|" + DR_1["Value3"].ToString() + "|" + DR_1["Date"].ToString().Substring(0, 10) + "|" + "name");
                 }
             }
             SynDetailDT = DS_SynDetail.Tables[1];
             foreach (DataRow DR_2 in SynDetailDT.Rows)
             {
-                SynDetailList.Add(DR_2["Code"].ToString() + "|" + DR_2["Value"].ToString() + "|" + DR_2["Date"].ToString().Substring(0, 10));
+                SynDetailList.Add(DR_2["Code"].ToString() + "|" + DR_2["Value"].ToString() + "|" + DR_2["Date"].ToString().Substring(0, 10) + "|" + DR_2["Name"].ToString());
             }
             res.Data = SynDetailList;
             res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
@@ -3279,7 +3284,7 @@ namespace CDMIS.Controllers
             DataTable SynDetailDT = DS_SynDetail.Tables[0];
             foreach (DataRow DR_2 in SynDetailDT.Rows)
             {
-                SynDetailList.Add(DR_2["Code"].ToString() + "|" + DR_2["Value"].ToString() + "|" + DR_2["Date"].ToString().Substring(0, 10));
+                SynDetailList.Add(DR_2["Code"].ToString() + "|" + DR_2["Value"].ToString() + "|" + DR_2["Date"].ToString().Substring(0, 10) + "|" + DR_2["Name"].ToString());
             }
             res.Data = SynDetailList;
             res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
@@ -3305,7 +3310,7 @@ namespace CDMIS.Controllers
             SynDetailDT = DS_SynDetail.Tables[1];
             foreach (DataRow DR_2 in SynDetailDT.Rows)
             {
-                SynDetailList.Add(DR_2["Code"].ToString() + "|" + DR_2["Value"].ToString() + "|" + DR_2["Date"].ToString().Substring(0, 10));
+                SynDetailList.Add(DR_2["Code"].ToString() + "|" + DR_2["Value"].ToString() + "|" + DR_2["Date"].ToString().Substring(0, 10) + "|" + DR_2["Name"].ToString());
             }
             res.Data = SynDetailList;
             res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
@@ -3869,5 +3874,27 @@ namespace CDMIS.Controllers
             return res;
         }
 
+        //更新Consult状态
+        public JsonResult UpdateConsultationStatus(string PatientId, int SortNo, int Status)
+        {
+            var res = new JsonResult();
+            var user = Session["CurrentUser"] as UserAndRole;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://121.43.107.106:9000/");
+            var requestJson = JsonConvert.SerializeObject(new { DoctorId = user.UserId, PatientId = PatientId, SortNo = SortNo, Status = Status, revUserId = user.UserId, TerminalName = user.TerminalName, TerminalIP = user.TerminalIP, DeviceType = user.DeviceType });
+            HttpContent httpContent = new StringContent(requestJson);
+            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = client.PostAsync("Api/v1/Users/ConsultationChangeStatus", httpContent).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                res.Data = true;
+            }
+            else
+            {
+                res.Data = false;
+            }
+            res.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+            return res;
+        }
     }
 }

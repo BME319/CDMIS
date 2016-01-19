@@ -217,7 +217,7 @@
                     if (res == true) {
                         $("#warningP").text("求助发送成功");
                         $("#integrateDiv").modal({
-                            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                            closeHTML: "<a href='#' id='Close' class='modal-close'>x</a>",
                             overlayClose: true
                         });
                     }
@@ -228,70 +228,6 @@
         $('#cancelBtn').click(function () {
             $.modal.close();
         })
-    });
-
-    //点击编辑按钮
-    $(".HCEditBtn").click(function () {
-        var trSeq = $(this).parent().parent().parent().find("tr").index($(this).parent().parent());
-        var preDocId = $.trim($("#MMTBody tr:eq(" + trSeq + ") td:eq(2)").text());
-        var seq = $.trim($("#MMTBody tr:eq(" + trSeq + ") td:eq(5)").text());
-        var Module = $.trim($("#MMTBody tr:eq(" + trSeq + ") td:eq(0)").text());
-        var btn2, trSeq2, doctorId, doctorName;
-
-        $('#HCDataTable tbody tr').each(function () {
-            var tr = $(this);
-            if ($.trim(tr.children().eq(0).text()) == preDocId) {
-                tr.siblings().removeClass("selected");
-                tr.addClass("selected");
-            }
-            tr.children().eq(4).children().removeAttr('disabled');
-        });
-
-        //点击修改按钮
-        $(".HCConfirmBtn").click(function () {
-            btn2 = $(this);
-            trSeq2 = $(this).parent().parent().parent().find("tr").index($(this).parent().parent());
-            doctorId = $.trim($("#HCDataTable tbody tr:eq(" + trSeq2 + ") td:eq(0)").text());
-            doctorName = $.trim($("#HCDataTable tbody tr:eq(" + trSeq2 + ") td:eq(1)").text());
-
-            $("#alertContent").text("确认发送？")
-            $('#alertModal').modal({
-                closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                overlayClose: true
-            });
-
-            //点击确认按钮
-            $("#confirmBtn").click(function () {
-                $.ajax({
-                    url: "/Management/UpdateHCInfo",
-                    type: "GET",
-                    dataType: "json",
-                    async: false,
-                    data: { PatientId: $("#PatientId").val(), DoctorId: doctorId, Seq: seq, PreDocId: preDocId, Module: Module },
-                    success: function (res) {
-                        if (res == 1) {
-                            $("#MMTBody tr:eq(" + trSeq + ") td:eq(2)").text(doctorId);
-                            $("#MMTBody tr:eq(" + trSeq + ") td:eq(3)").children().val(doctorName);
-                            $("#HCDataTable tbody tr:eq(" + trSeq2 + ")").addClass("selected");
-                            $("#HCDataTable tbody tr:eq(" + trSeq2 + ")").siblings().removeClass("selected");
-                            $("#HCDataTable tbody button").each(function () {
-                                $(this).attr("disabled", "disabled");
-                            });
-                        }
-                        else if (res == 0) {
-                            alert("数据更新失败，请重试！");
-                        }
-                        $.modal.close();
-                        //                        $('#confirmBtn').unbind("click");
-                        //                        $('#cancelBtn').unbind("click");
-                    }
-                });
-            });
-
-            $('#cancelBtn').click(function () {
-                $.modal.close();
-            })
-        });
     });
 
     //检查是否能发送信息

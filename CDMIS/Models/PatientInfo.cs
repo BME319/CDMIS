@@ -102,5 +102,10 @@ namespace CDMIS.Models
         public int Status { get; set; }
         public string StatusText { get; set; }
         public string PhotoAddress { get; set; }
+        public int SortNo { get; set; }
+        public string HealthCoachId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public string Answer { get; set; }
     }
 }
